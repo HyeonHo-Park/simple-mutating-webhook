@@ -1,0 +1,28 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: simple-mutating-webhook-conf
+  labels:
+    app: simple-mutating-webhook
+webhooks:
+  - name: simple.mutating-webhook.com
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: test
+    rules:
+      - apiGroups:   ["apps"]
+        apiVersions: ["v1"]
+        operations:  ["CREATE", "UPDATE"]
+        resources:   ["deployments"]
+        scope:       "Namespaced"
+    clientConfig:
+      caBundle: {{CA_PEM_BASE64}}
+      service:
+        namespace: simple-mutating-webhook
+        name: simple-mutating-webhook
+        path: /api/v1/deployment/mutate
+        port: 8080
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 10
+    failurePolicy: Fail

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-mutating-webhook
+  namespace: simple-mutating-webhook
+  labels:
+    app: simple-mutating-webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simple-mutating-webhook
+  template:
+    metadata:
+      labels:
+        app: simple-mutating-webhook
+    spec:
+      containers:
+        - name: simple-mutating-webhook
+          image: user/path:tag
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: gin
+          volumeMounts:
+            - name: webhook-tls
+              mountPath: /run/secrets/tls
+              readOnly: true
+      volumes:
+        - name: webhook-tls
+          secret:
+            secretName: webhook-certs
