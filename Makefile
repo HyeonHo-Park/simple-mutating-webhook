@@ -62,7 +62,7 @@ release: ## goreleaser release
 .PHONY: install
 install: ## delpoy webhook in kubernetes
 	@echo "$(ECHO_BEGIN) install webhook $(ECHO_END)"
-	@./hack/deploy.sh
+	@./hack/install.sh
 	@echo "$(ECHO_BEGIN) Successfully Installed Webhoook!$(ECHO_END)"
 
 .PHONY: remove
