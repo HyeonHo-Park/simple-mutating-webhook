@@ -65,6 +65,18 @@ install: ## delpoy webhook in kubernetes
 	@./hack/deploy.sh
 	@echo "$(ECHO_BEGIN) Successfully Installed Webhoook!$(ECHO_END)"
 
+.PHONY: remove
+remove: ## remove webhook and examples deployments in kubernetes
+	@echo "$(ECHO_BEGIN) remove webhook $(ECHO_END)"
+	@./hack/remove.sh
+	@echo "$(ECHO_BEGIN) Successfully Removed all resources!$(ECHO_END)"
+
+.PHONY: deploy
+deploy: ## deploy examples
+	@echo "$(ECHO_BEGIN) deploy examples $(ECHO_END)"
+	@./hack/deploy.sh
+	@echo "$(ECHO_BEGIN) Successfully Deploy examples!$(ECHO_END)"
+
 .PHONY: help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \

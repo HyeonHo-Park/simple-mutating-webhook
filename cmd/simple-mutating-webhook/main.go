@@ -14,7 +14,7 @@ import (
 
 func main()  {
 	router := setupRouter()
-	router.Run(":8080")
+	router.RunTLS(":8080", "/run/secrets/tls/tls.crt", "/run/secrets/tls/tls.key")
 }
 
 func setupRouter() *gin.Engine {

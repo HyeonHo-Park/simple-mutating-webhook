@@ -7,8 +7,11 @@ metadata:
 webhooks:
   - name: simple.mutating-webhook.com
     namespaceSelector:
-      matchLabels:
-        kubernetes.io/metadata.name: test
+      matchExpressions:
+      - key: mutate
+        operator: In
+        values:
+        - required
     rules:
       - apiGroups:   ["apps"]
         apiVersions: ["v1"]
@@ -21,8 +24,8 @@ webhooks:
         namespace: simple-mutating-webhook
         name: simple-mutating-webhook
         path: /api/v1/deployment/mutate
-        port: 8080
+        port: 443
     admissionReviewVersions: ["v1", "v1beta1"]
     sideEffects: None
     timeoutSeconds: 10
-    failurePolicy: Fail
+#    failurePolicy: Fail
