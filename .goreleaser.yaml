@@ -1,0 +1,35 @@
+project_name: simple-mutating-webhook
+env_files:
+  github_token: ~/.config/github/token
+before:
+  hooks:
+    - go mod download
+builds:
+  - main: ./cmd/simple-mutating-webhook/main.go
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    binary: simple-mutating-webhook
+dockers:
+  - image_templates:
+      - phh129/{{ .ProjectName }}:{{ .Tag }}
+    dockerfile: GoReleaserDockerfile
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^chore:'
+      - '^docs:'
+      - '^test:'
+#announce:
+#  slack:
+#    enabled: true
+#    message_template: '{{ .ProjectName }} {{ .Tag }} is out! Check it out at {{ .ReleaseURL }}'
+#    channel: '#your-channel'
+#    username: 'simple-mutating-webhook-release'
+#    icon_url: 'https://goreleaser.com/static/logo.png'

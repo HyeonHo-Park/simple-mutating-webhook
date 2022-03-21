@@ -24,7 +24,7 @@ func NewDeploymentHandler() *DeploymentHandler {
 	}
 }
 
-func (d DeploymentHandler) Mutate(ctx *gin.Context)  {
+func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 	admissionReview := admissionv1.AdmissionReview{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "AdmissionReview",

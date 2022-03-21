@@ -1,0 +1,10 @@
+FROM alpine:3.15
+WORKDIR /simple-mutating-webhook
+
+RUN apk add --no-cache curl && \
+    rm -rf /var/cache/apk/*
+
+COPY /simple-mutating-webhook ./simple-mutating-webhook
+
+EXPOSE 8080
+CMD ["./simple-mutating-webhook"]
