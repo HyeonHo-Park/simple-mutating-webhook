@@ -33,13 +33,13 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 		},
 	}
 
-	// deleted log
-	log.Infof("req body : %v", ctx.Request.Body)
-
 	ctx.Bind(admissionReview.Request)
 
 	// deleted log
 	log.Infof("admission review : %v", admissionReview)
+
+	// deleted log
+	log.Infof("req body : %v", ctx.Request.Body)
 
 	var deployment appsv1.Deployment
 	if err := json.Unmarshal(admissionReview.Request.Object.Raw, deployment); err != nil {

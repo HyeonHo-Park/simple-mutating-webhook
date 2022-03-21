@@ -43,7 +43,7 @@ lint: ## run go lint.
 	@echo "$(ECHO_BEGIN) Running go lint$(ECHO_END)"
 	@docker run --rm \
 		-v $(shell pwd):/app \
-		-w /app golangci/golangci-lint:v1.32.2 \
+		-w /app golangci/golangci-lint:v1.45.0 \
 		golangci-lint run --timeout 15m --issues-exit-code 0 -E goimports,golint,godot,testpackage,misspell
 	@echo "$(ECHO_BEGIN) Go! Time to check lint$(ECHO_END)"
 
