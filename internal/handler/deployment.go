@@ -5,6 +5,7 @@ import (
 	"github.com/HyeonHo-Park/simple-mutating-webhook/internal/controller"
 	"github.com/HyeonHo-Park/simple-mutating-webhook/internal/model"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net/http"
 
@@ -34,12 +35,16 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 
 	ctx.Bind(admissionReview)
 	//ctx.Bind(admissionReview.Request)
+	// deleted log
+	log.Infof("admission review : %v", admissionReview)
 
 	var deployment appsv1.Deployment
 	if err := json.Unmarshal(admissionReview.Request.Object.Raw, deployment); err != nil {
 		model.ErrResponse(ctx, admissionReview, err)
 		return
 	}
+	// deleted log
+	log.Infof("deployment : %v", deployment)
 
 	if deployment.Namespace != NamespaceNeedToBeMutated {
 		result := model.EmptyAdmissionReviewResponse(admissionReview)
@@ -52,6 +57,8 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 		model.ErrResponse(ctx, admissionReview, err)
 		return
 	}
+	// deleted log
+	log.Infof("patch : %v", patch)
 
 	result, err := model.SuccessAdmissionReviewResponse(admissionReview, patch)
 	if err != nil {
@@ -59,5 +66,7 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 		return
 	}
 
+	// deleted log
+	log.Infof("result : %v", result)
 	model.APIResponse(ctx, "OK", http.StatusOK, ctx.Request.Method, result)
 }
