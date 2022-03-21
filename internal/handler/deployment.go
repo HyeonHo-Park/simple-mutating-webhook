@@ -33,8 +33,11 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 		},
 	}
 
-	ctx.Bind(admissionReview)
-	//ctx.Bind(admissionReview.Request)
+	// deleted log
+	log.Infof("req body : %v", ctx.Request.Body)
+
+	ctx.Bind(admissionReview.Request)
+
 	// deleted log
 	log.Infof("admission review : %v", admissionReview)
 

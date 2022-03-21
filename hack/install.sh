@@ -1,27 +1,27 @@
 # Create Key Pair
 NS="simple-mutating-webhook"
-DNS="simple-mutating-webhook.${NS}.svc"
-KEYNAME="webhook-server-tls"
-openssl req -nodes -new -x509 -keyout ca.key -out ca.crt -subj "/CN=Simple Mutating Webhook CA"
-openssl genrsa -out ${KEYNAME}.key 2048
-openssl req -new -key ${KEYNAME}.key -subj "/CN=${DNS}" \
-    | openssl x509 -req -CA ca.crt -CAkey ca.key -CAcreateserial -out ${KEYNAME}.crt
+DNS="simple-mutating-webhook.simple-mutating-webhook.svc"
 
-# Register Mutator Server as a Mutate Webhook to Kubernetes
-export CA_PEM_BASE64="$(openssl base64 -A <"ca.crt")"
-cat ./manifests/webhook/mutating-webhook-configuration.yaml | sed "s/{{CA_PEM_BASE64}}/$CA_PEM_BASE64/g" | kubectl apply -n ${NS} -f -
+# have to use openssl@3 on mac
+/usr/local/opt/openssl/bin/openssl req -x509 -newkey rsa:2048 -keyout tls.key -out tls.crt -days 365  \
+  -addext "subjectAltName = DNS:${DNS}" \
+  -nodes -subj "/CN=${DNS}"
 
 # Create NS
 kubectl create ns ${NS}
 
 # Create TLS secret for service
 kubectl create secret tls webhook-certs -n ${NS} \
-    --cert "${KEYNAME}.crt" \
-    --key "${KEYNAME}.key"
+    --cert "tls.crt" \
+    --key "tls.key"
 
 # Create Deployment, Service
 kubectl apply -f ./manifests/webhook/deployment.yaml
 kubectl apply -f ./manifests/webhook/service.yaml
 
+# Register Mutator Server as a Mutate Webhook to Kubernetes
+export CA_PEM_BASE64="$(openssl base64 -A <"tls.crt")"
+cat ./manifests/webhook/mutating-webhook-configuration.yaml | sed "s/{{CA_PEM_BASE64}}/$CA_PEM_BASE64/g" | kubectl apply -n ${NS} -f -
+
 # Clean files
-rm -rf ${KEYNAME}.* ca.*
+rm -rf tls.*
