@@ -12,8 +12,6 @@ RUN go mod verify
 COPY .git .git
 COPY cmd cmd
 COPY internal internal
-COPY hack hack
-COPY Makefile ./
 
 ENV GO111MODULE="on" \
   GOOS="linux" \
@@ -24,7 +22,7 @@ RUN apk add --no-cache \
       git && \
     rm -rf /var/cache/apk/*
 
-RUN make install VERSION=${VERSION}
+RUN go install $GOPATH/src/github.com/HyeonHo-Park/simple-mutating-webhook/cmd/simple-mutating-webhook
 
 # ======================
 #  GO API STAGE
