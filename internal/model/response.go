@@ -14,7 +14,7 @@ type JSONPatchEntry struct {
 	Value json.RawMessage `json:"value,omitempty"`
 }
 
-func SuccessAdmissionReviewResponse(admissionReview admissionv1.AdmissionReview, patch []JSONPatchEntry) (*admissionv1.AdmissionReview, error) {
+func SuccessAdmissionReviewResponse(admissionReview *admissionv1.AdmissionReview, patch []JSONPatchEntry) (*admissionv1.AdmissionReview, error) {
 	patchBytes, err := json.Marshal(&patch)
 	if err != nil {
 		return nil, err
@@ -23,7 +23,10 @@ func SuccessAdmissionReviewResponse(admissionReview admissionv1.AdmissionReview,
 	patchType := admissionv1.PatchTypeJSONPatch
 
 	return &admissionv1.AdmissionReview{
-		TypeMeta: admissionReview.TypeMeta,
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "AdmissionReview",
+			APIVersion: "admission.k8s.io/v1",
+		},
 		Response: &admissionv1.AdmissionResponse{
 			UID:       admissionReview.Request.UID,
 			Allowed:   true,
@@ -33,9 +36,12 @@ func SuccessAdmissionReviewResponse(admissionReview admissionv1.AdmissionReview,
 	}, nil
 }
 
-func FailedAdmissionReviewResponse(admissionReview admissionv1.AdmissionReview, err error) *admissionv1.AdmissionReview {
+func FailedAdmissionReviewResponse(admissionReview *admissionv1.AdmissionReview, err error) *admissionv1.AdmissionReview {
 	return &admissionv1.AdmissionReview{
-		TypeMeta: admissionReview.TypeMeta,
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "AdmissionReview",
+			APIVersion: "admission.k8s.io/v1",
+		},
 		Response: &admissionv1.AdmissionResponse{
 			UID:     admissionReview.Request.UID,
 			Allowed: false,
@@ -44,9 +50,12 @@ func FailedAdmissionReviewResponse(admissionReview admissionv1.AdmissionReview, 
 	}
 }
 
-func EmptyAdmissionReviewResponse(admissionReview admissionv1.AdmissionReview) *admissionv1.AdmissionReview {
+func EmptyAdmissionReviewResponse(admissionReview *admissionv1.AdmissionReview) *admissionv1.AdmissionReview {
 	return &admissionv1.AdmissionReview{
-		TypeMeta: admissionReview.TypeMeta,
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "AdmissionReview",
+			APIVersion: "admission.k8s.io/v1",
+		},
 		Response: &admissionv1.AdmissionResponse{
 			UID: admissionReview.Request.UID,
 		},
@@ -76,7 +85,7 @@ func APIResponse(ctx *gin.Context, Message string, StatusCode int, Method string
 	}
 }
 
-func ErrResponse(ctx *gin.Context, admissionReview admissionv1.AdmissionReview, err error) {
+func ErrResponse(ctx *gin.Context, admissionReview *admissionv1.AdmissionReview, err error) {
 	inject := FailedAdmissionReviewResponse(admissionReview, err)
 	APIResponse(ctx, err.Error(), http.StatusInternalServerError, ctx.Request.Method, inject)
 }
