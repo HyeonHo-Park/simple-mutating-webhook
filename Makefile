@@ -29,7 +29,7 @@ run: ## compile and start the application in development mode.
 build: update-dependency ## goreleaser build artifacts and container image
 	@echo "$(ECHO_BEGIN) Build $(ECHO_END)"
 	#@export SLACK_WEBHOOK=$(SLACK_WEBHOOK)
-	@goreleaser release -f .local-goreleaser.yaml --snapshot --rm-dist
+	@goreleaser release --snapshot --rm-dist
 	@echo "$(ECHO_BEGIN) Yay! Binary built successfully!: $(GO_BIN)/$(PROJECT)$(ECHO_END)"
 
 .PHONY: test

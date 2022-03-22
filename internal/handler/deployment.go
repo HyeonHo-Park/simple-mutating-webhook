@@ -26,14 +26,10 @@ func NewDeploymentHandler() *DeploymentHandler {
 
 func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 	admissionReview := &admissionv1.AdmissionReview{}
-
-	// deleted log
-	log.Infof("req body : %v", ctx.Request.Body)
-
 	ctx.Bind(admissionReview)
 
 	// deleted log
-	log.Infof("binded admission req : %v", admissionReview.Request)
+	log.Infof("binded admission req obj raw : %v", string(admissionReview.Request.Object.Raw))
 
 	var deployment appsv1.Deployment
 	if err := json.Unmarshal(admissionReview.Request.Object.Raw, deployment); err != nil {
