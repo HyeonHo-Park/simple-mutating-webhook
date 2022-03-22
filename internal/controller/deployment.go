@@ -71,6 +71,7 @@ func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 				return nil, err
 			}
 
+			log.Infof("req cpu : %d", r)
 			deployment.Spec.Template.Spec.Containers[i].Resources.Requests = corev1.ResourceList{
 				corev1.ResourceCPU: *resource.NewQuantity(r, resource.DecimalSI),
 			}
@@ -89,6 +90,7 @@ func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 				return nil, err
 			}
 
+			log.Infof("lmit cpu : %d", l)
 			deployment.Spec.Template.Spec.Containers[i].Resources.Limits = corev1.ResourceList{
 				corev1.ResourceCPU: *resource.NewQuantity(l, resource.DecimalSI),
 			}

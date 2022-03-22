@@ -157,7 +157,7 @@ func Test_checkReplicas(t *testing.T) {
 	moreReplica := int32(5)
 
 	type args struct {
-		deployment appsv1.Deployment
+		deployment *appsv1.Deployment
 	}
 	tests := []struct {
 		name    string
@@ -168,7 +168,7 @@ func Test_checkReplicas(t *testing.T) {
 		{
 			"less than replicas 3",
 			args{
-				deployment: appsv1.Deployment{
+				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
 						Replicas: &lessReplica,
 					},
@@ -180,7 +180,7 @@ func Test_checkReplicas(t *testing.T) {
 		{
 			"more than replicas 3",
 			args{
-				deployment: appsv1.Deployment{
+				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
 						Replicas: &moreReplica,
 					},
@@ -192,7 +192,7 @@ func Test_checkReplicas(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := checkReplicas(&tt.args.deployment)
+			got, err := checkReplicas(tt.args.deployment)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("checkReplicas() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -214,7 +214,7 @@ func Test_checkResource(t *testing.T) {
 	cpuReq700 := resource.NewQuantity(700, resource.DecimalSI)
 
 	type args struct {
-		deployment appsv1.Deployment
+		deployment *appsv1.Deployment
 	}
 	tests := []struct {
 		name    string
@@ -225,7 +225,7 @@ func Test_checkResource(t *testing.T) {
 		{
 			"less than min all",
 			args{
-				deployment: appsv1.Deployment{
+				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
@@ -252,7 +252,7 @@ func Test_checkResource(t *testing.T) {
 		{
 			"less than min req",
 			args{
-				deployment: appsv1.Deployment{
+				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
@@ -279,7 +279,7 @@ func Test_checkResource(t *testing.T) {
 		{
 			"less than min limit",
 			args{
-				deployment: appsv1.Deployment{
+				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
@@ -306,7 +306,7 @@ func Test_checkResource(t *testing.T) {
 		{
 			"fit value",
 			args{
-				deployment: appsv1.Deployment{
+				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
@@ -333,7 +333,7 @@ func Test_checkResource(t *testing.T) {
 		{
 			"more than max all",
 			args{
-				deployment: appsv1.Deployment{
+				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
@@ -360,7 +360,7 @@ func Test_checkResource(t *testing.T) {
 		{
 			"more than max limit",
 			args{
-				deployment: appsv1.Deployment{
+				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
@@ -387,7 +387,7 @@ func Test_checkResource(t *testing.T) {
 		{
 			"more than max req",
 			args{
-				deployment: appsv1.Deployment{
+				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
@@ -414,7 +414,7 @@ func Test_checkResource(t *testing.T) {
 		{
 			"more than max total",
 			args{
-				deployment: appsv1.Deployment{
+				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
@@ -471,7 +471,7 @@ func Test_checkResource(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := checkResource(&tt.args.deployment)
+			got, err := checkResource(tt.args.deployment)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("checkResource() error = %v, wantErr %v", err, tt.wantErr)
 				return
