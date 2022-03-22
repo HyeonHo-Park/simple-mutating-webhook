@@ -73,6 +73,6 @@ func WriteResponse(ctx *gin.Context, ar *admissionv1.AdmissionReview, data inter
 		log.Errorf("Failed Marshal: %v", err)
 	}
 
-	log.Infof("resp : %v", resp)
+	log.Infof("resp : %v", string(resp))
 	ctx.Writer.Write(resp)
 }

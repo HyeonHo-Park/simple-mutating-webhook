@@ -64,7 +64,7 @@ func TestDeploymentController_Mutate(t *testing.T) {
 				&model.JSONPatchEntry{
 					OP:    "replace",
 					Path:  "/spec/template/spec/containers",
-					Value: []byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"200\"},\"requests\":{\"cpu\":\"200\"}}}]"),
+					Value: []byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"200m\"},\"requests\":{\"cpu\":\"200m\"}}}]"),
 				},
 			},
 			false,
@@ -103,7 +103,7 @@ func TestDeploymentController_Mutate(t *testing.T) {
 				&model.JSONPatchEntry{
 					OP:    "replace",
 					Path:  "/spec/template/spec/containers",
-					Value: []byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"300\"},\"requests\":{\"cpu\":\"300\"}}}]"),
+					Value: []byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"300m\"},\"requests\":{\"cpu\":\"300m\"}}}]"),
 				},
 			},
 			false,
@@ -246,7 +246,7 @@ func Test_checkResource(t *testing.T) {
 					},
 				},
 			},
-			[]byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"200\"},\"requests\":{\"cpu\":\"200\"}}}]"),
+			[]byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"200m\"},\"requests\":{\"cpu\":\"200m\"}}}]"),
 			false,
 		},
 		{
@@ -273,7 +273,7 @@ func Test_checkResource(t *testing.T) {
 					},
 				},
 			},
-			[]byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"300\"},\"requests\":{\"cpu\":\"200\"}}}]"),
+			[]byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"300m\"},\"requests\":{\"cpu\":\"200m\"}}}]"),
 			false,
 		},
 		{
@@ -300,7 +300,7 @@ func Test_checkResource(t *testing.T) {
 					},
 				},
 			},
-			[]byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"200\"},\"requests\":{\"cpu\":\"300\"}}}]"),
+			[]byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"200m\"},\"requests\":{\"cpu\":\"300m\"}}}]"),
 			false,
 		},
 		{
@@ -327,7 +327,7 @@ func Test_checkResource(t *testing.T) {
 					},
 				},
 			},
-			[]byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"300\"},\"requests\":{\"cpu\":\"300\"}}}]"),
+			[]byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"300m\"},\"requests\":{\"cpu\":\"300m\"}}}]"),
 			false,
 		},
 		{

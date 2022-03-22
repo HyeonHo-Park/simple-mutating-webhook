@@ -12,15 +12,15 @@ import (
 )
 
 const (
-	eachCPUMin = 200
-	eachCPUMax = 500
+	eachCPUMin    = 200
+	eachCPUMax    = 500
 	totalCPULimit = 1000
 )
 
-type DeploymentController struct {}
+type DeploymentController struct{}
 
 //Mutate TODO: Check DecimalSI format 200 -> 200m
-func (d DeploymentController) Mutate(deployment *appsv1.Deployment) ([]*model.JSONPatchEntry, error){
+func (d DeploymentController) Mutate(deployment *appsv1.Deployment) ([]*model.JSONPatchEntry, error) {
 	replicaBytes, err := checkReplicas(deployment)
 	if err != nil {
 		log.Errorf("marshall replicas: %v", err)
@@ -58,7 +58,7 @@ func checkReplicas(deployment *appsv1.Deployment) ([]byte, error) {
 
 func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 	var rTotal, lTotal int64 = 0, 0
-	for i, c := range deployment.Spec.Template.Spec.Containers{
+	for i, c := range deployment.Spec.Template.Spec.Containers {
 		r, err := checkEachCPU(c.Resources.Requests.Cpu().Value())
 		if err != nil {
 			log.Error(err)
@@ -71,9 +71,8 @@ func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 			return nil, err
 		}
 
-		deployment.Spec.Template.Spec.Containers[i].Resources.Requests = corev1.ResourceList{
-			corev1.ResourceCPU: *resource.NewQuantity(r, resource.DecimalSI),
-		}
+		deployment.Spec.Template.Spec.Containers[i].Resources.
+			Requests[corev1.ResourceCPU] = resource.MustParse(fmt.Sprintf("%dm", r))
 
 		l, err := checkEachCPU(c.Resources.Limits.Cpu().Value())
 		if err != nil {
@@ -87,15 +86,14 @@ func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 			return nil, err
 		}
 
-		deployment.Spec.Template.Spec.Containers[i].Resources.Limits = corev1.ResourceList{
-			corev1.ResourceCPU: *resource.NewQuantity(l, resource.DecimalSI),
-		}
+		deployment.Spec.Template.Spec.Containers[i].Resources.
+			Limits[corev1.ResourceCPU] = resource.MustParse(fmt.Sprintf("%dm", l))
 	}
 
 	return json.Marshal(&deployment.Spec.Template.Spec.Containers)
 }
 
-func checkEachCPU(cpu int64) (int64, error){
+func checkEachCPU(cpu int64) (int64, error) {
 	switch true {
 	case cpu > eachCPUMax:
 		return 0, errors.New(fmt.Sprintf("usage of CPU > %dm", eachCPUMax))
