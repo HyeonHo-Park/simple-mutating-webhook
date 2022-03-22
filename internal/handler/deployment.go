@@ -38,7 +38,9 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 
 	patch, err := d.controller.Mutate(&deployment)
 	if err != nil {
-		model.WriteResponse(ctx, admissionReview, patch)
+		model.WriteResponse(ctx, admissionReview, err)
 		return
 	}
+
+	model.WriteResponse(ctx, admissionReview, patch)
 }
