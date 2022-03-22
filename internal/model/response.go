@@ -67,10 +67,14 @@ func makeResponseObj(uid types.UID, data interface{}) *admissionv1.AdmissionRevi
 
 func WriteResponse(ctx *gin.Context, ar *admissionv1.AdmissionReview, data interface{}) {
 	obj := makeResponseObj(ar.Request.UID, data)
+	log.Infof("obj : %v", string(obj.Response.Patch))
+	log.Infof("obj : %s", obj.Response.Result.Message)
+
 	resp, err := json.Marshal(obj)
 	if err != nil {
 		log.Errorf("Failed Marshal: %v", err)
 	}
 
+	log.Infof("resp : %v", resp)
 	ctx.Writer.Write(resp)
 }
