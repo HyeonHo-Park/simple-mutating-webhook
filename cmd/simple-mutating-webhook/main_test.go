@@ -1,11 +1,5 @@
 package main
 
-import (
-	"encoding/json"
-	"github.com/HyeonHo-Park/simple-mutating-webhook/internal/model"
-	"github.com/sirupsen/logrus"
-)
-
 var router = setupRouter()
 
 //func TestMutate(t *testing.T) {
@@ -45,19 +39,3 @@ var router = setupRouter()
 //		})
 //	}
 //}
-
-func stringify(payload interface{}) []byte {
-	response, _ := json.Marshal(payload)
-	return response
-}
-
-func parse(payload []byte) model.ResponseBody {
-	var jsonResponse model.ResponseBody
-	err := json.Unmarshal(payload, &jsonResponse)
-
-	if err != nil {
-		logrus.Fatal(err.Error())
-	}
-
-	return jsonResponse
-}

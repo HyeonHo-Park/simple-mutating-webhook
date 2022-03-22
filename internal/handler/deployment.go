@@ -5,9 +5,6 @@ import (
 	"github.com/HyeonHo-Park/simple-mutating-webhook/internal/controller"
 	"github.com/HyeonHo-Park/simple-mutating-webhook/internal/model"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
-	"net/http"
-
 	admissionv1 "k8s.io/api/admission/v1"
 	appsv1 "k8s.io/api/apps/v1"
 )
@@ -30,28 +27,18 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 
 	var deployment appsv1.Deployment
 	if err := json.Unmarshal(admissionReview.Request.Object.Raw, &deployment); err != nil {
-		model.ErrResponse(ctx, admissionReview, err)
+		model.APIResponse(ctx, admissionReview, err)
 		return
 	}
 
 	if deployment.Namespace != NamespaceNeedToBeMutated {
-		result := model.EmptyAdmissionReviewResponse(admissionReview)
-		model.APIResponse(ctx, "OK", http.StatusOK, ctx.Request.Method, &result)
+		model.APIResponse(ctx, admissionReview, nil)
 		return
 	}
 
 	patch, err := d.controller.Mutate(&deployment)
 	if err != nil {
-		model.ErrResponse(ctx, admissionReview, err)
+		model.APIResponse(ctx, admissionReview, patch)
 		return
 	}
-
-	result, err := model.SuccessAdmissionReviewResponse(admissionReview, patch)
-	if err != nil {
-		model.ErrResponse(ctx, admissionReview, err)
-		return
-	}
-
-	log.Infof("patch result : %v", string(result.Response.Patch))
-	model.APIResponse(ctx, "OK", http.StatusOK, ctx.Request.Method, &result)
 }

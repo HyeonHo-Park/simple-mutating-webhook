@@ -2,11 +2,12 @@ package model
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	admissionv1 "k8s.io/api/admission/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"net/http"
+	"k8s.io/apimachinery/pkg/types"
 )
 
 type JSONPatchEntry struct {
@@ -15,84 +16,50 @@ type JSONPatchEntry struct {
 	Value json.RawMessage `json:"value,omitempty"`
 }
 
-func SuccessAdmissionReviewResponse(admissionReview *admissionv1.AdmissionReview, patch []*JSONPatchEntry) (*admissionv1.AdmissionReview, error) {
-	patchBytes, err := json.Marshal(&patch)
-	if err != nil {
-		return nil, err
-	}
+func makeResponseObj(uid types.UID, data interface{}) *admissionv1.AdmissionReview {
+	var response *admissionv1.AdmissionResponse
 
-	patchType := admissionv1.PatchTypeJSONPatch
+	switch data.(type) {
+	case []*JSONPatchEntry:
+		patchBytes, err := json.Marshal(&data)
+		if err != nil {
+		}
 
-	return &admissionv1.AdmissionReview{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "AdmissionReview",
-			APIVersion: "admission.k8s.io/v1",
-		},
-		Response: &admissionv1.AdmissionResponse{
-			UID:       admissionReview.Request.UID,
+		patchType := admissionv1.PatchTypeJSONPatch
+
+		response = &admissionv1.AdmissionResponse{
+			UID:       uid,
 			Allowed:   true,
 			Patch:     patchBytes,
 			PatchType: &patchType,
-		},
-	}, nil
-}
-
-func FailedAdmissionReviewResponse(admissionReview *admissionv1.AdmissionReview, err error) *admissionv1.AdmissionReview {
-	return &admissionv1.AdmissionReview{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "AdmissionReview",
-			APIVersion: "admission.k8s.io/v1",
-		},
-		Response: &admissionv1.AdmissionResponse{
-			UID:     admissionReview.Request.UID,
+		}
+	case error:
+		response = &admissionv1.AdmissionResponse{
+			UID:     uid,
 			Allowed: false,
-			Result:  &metav1.Status{Message: err.Error()},
-		},
+			Result:  &metav1.Status{Message: fmt.Sprintf("%v", data)},
+		}
+	default:
+		response = &admissionv1.AdmissionResponse{
+			UID: uid,
+		}
 	}
-}
 
-func EmptyAdmissionReviewResponse(admissionReview *admissionv1.AdmissionReview) *admissionv1.AdmissionReview {
 	return &admissionv1.AdmissionReview{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "AdmissionReview",
 			APIVersion: "admission.k8s.io/v1",
 		},
-		Response: &admissionv1.AdmissionResponse{
-			UID: admissionReview.Request.UID,
-		},
+		Response: response,
 	}
 }
 
-type ResponseBody struct {
-	StatusCode int         `json:"statusCode"`
-	Method     string      `json:"method"`
-	Message    string      `json:"message"`
-	Data       interface{} `json:"data"`
-}
-
-//APIResponse TODO: Fix admission response
-func APIResponse(ctx *gin.Context, Message string, StatusCode int, Method string, admissionReview *admissionv1.AdmissionReview) {
-	resp, err := json.Marshal(admissionReview)
+func APIResponse(ctx *gin.Context, ar *admissionv1.AdmissionReview, data interface{}) {
+	obj := makeResponseObj(ar.Request.UID, data)
+	resp, err := json.Marshal(obj)
 	if err != nil {
 		log.Errorf("Failed Marshal: %v", err)
 	}
-	ctx.Writer.Write(resp)
-	//jsonResponse := ResponseBody{
-	//	StatusCode: StatusCode,
-	//	Method:     Method,
-	//	Message:    Message,
-	//	Data:       Data,
-	//}
-	//
-	//if StatusCode >= 400 {
-	//	ctx.JSON(StatusCode, jsonResponse)
-	//	defer ctx.AbortWithStatus(StatusCode)
-	//} else {
-	//	ctx.JSON(StatusCode, jsonResponse)
-	//}
-}
 
-func ErrResponse(ctx *gin.Context, admissionReview *admissionv1.AdmissionReview, err error) {
-	inject := FailedAdmissionReviewResponse(admissionReview, err)
-	APIResponse(ctx, err.Error(), http.StatusInternalServerError, ctx.Request.Method, &inject)
+	ctx.Writer.Write(resp)
 }
