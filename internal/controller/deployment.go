@@ -60,7 +60,7 @@ func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 	replicas := int64(*deployment.Spec.Replicas)
 
 	for i, c := range deployment.Spec.Template.Spec.Containers {
-		r, err := checkEachCPU(c.Resources.Requests.Cpu().Value())
+		r, err := checkEachCPU(c.Resources.Requests.Cpu().MilliValue())
 		if err != nil {
 			log.Error(err)
 			return nil, err
@@ -75,7 +75,7 @@ func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 		deployment.Spec.Template.Spec.Containers[i].Resources.
 			Requests[corev1.ResourceCPU] = resource.MustParse(fmt.Sprintf("%dm", r))
 
-		l, err := checkEachCPU(c.Resources.Limits.Cpu().Value())
+		l, err := checkEachCPU(c.Resources.Limits.Cpu().MilliValue())
 		if err != nil {
 			log.Error(err)
 			return nil, err

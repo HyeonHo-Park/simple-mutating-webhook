@@ -13,13 +13,13 @@ func TestDeploymentController_Mutate(t *testing.T) {
 	lessReplica := int32(1)
 	moreReplica := int32(5)
 
-	cpuLimit100 := resource.NewQuantity(100, resource.DecimalSI)
-	cpuLimit300 := resource.NewQuantity(300, resource.DecimalSI)
-	cpuLimit700 := resource.NewQuantity(700, resource.DecimalSI)
+	cpuLimit100 := resource.MustParse("100m")
+	cpuLimit400 := resource.MustParse("400m")
+	cpuLimit700 := resource.MustParse("700m")
 
-	cpuReq100 := resource.NewQuantity(100, resource.DecimalSI)
-	cpuReq300 := resource.NewQuantity(300, resource.DecimalSI)
-	cpuReq700 := resource.NewQuantity(700, resource.DecimalSI)
+	cpuReq100 := resource.MustParse("100m")
+	cpuReq400 := resource.MustParse("400m")
+	cpuReq700 := resource.MustParse("700m")
 
 	type args struct {
 		deployment *appsv1.Deployment
@@ -42,10 +42,10 @@ func TestDeploymentController_Mutate(t *testing.T) {
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit100,
+												corev1.ResourceCPU: cpuLimit100,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq100,
+												corev1.ResourceCPU: cpuReq100,
 											},
 										},
 									},
@@ -81,10 +81,10 @@ func TestDeploymentController_Mutate(t *testing.T) {
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit300,
+												corev1.ResourceCPU: cpuLimit400,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq300,
+												corev1.ResourceCPU: cpuReq400,
 											},
 										},
 									},
@@ -103,7 +103,7 @@ func TestDeploymentController_Mutate(t *testing.T) {
 				&model.JSONPatchEntry{
 					OP:    "replace",
 					Path:  "/spec/template/spec/containers",
-					Value: []byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"300m\"},\"requests\":{\"cpu\":\"300m\"}}}]"),
+					Value: []byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"400m\"},\"requests\":{\"cpu\":\"400m\"}}}]"),
 				},
 			},
 			false,
@@ -120,10 +120,10 @@ func TestDeploymentController_Mutate(t *testing.T) {
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit700,
+												corev1.ResourceCPU: cpuLimit700,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq700,
+												corev1.ResourceCPU: cpuReq700,
 											},
 										},
 									},
@@ -208,13 +208,13 @@ func Test_checkReplicas(t *testing.T) {
 func Test_checkResource(t *testing.T) {
 	replica := int32(1)
 
-	cpuLimit100 := resource.NewQuantity(100, resource.DecimalSI)
-	cpuLimit300 := resource.NewQuantity(300, resource.DecimalSI)
-	cpuLimit700 := resource.NewQuantity(700, resource.DecimalSI)
+	cpuLimit100 := resource.MustParse("100m")
+	cpuLimit300 := resource.MustParse("300m")
+	cpuLimit700 := resource.MustParse("700m")
 
-	cpuReq100 := resource.NewQuantity(100, resource.DecimalSI)
-	cpuReq300 := resource.NewQuantity(300, resource.DecimalSI)
-	cpuReq700 := resource.NewQuantity(700, resource.DecimalSI)
+	cpuReq100 := resource.MustParse("100m")
+	cpuReq300 := resource.MustParse("300m")
+	cpuReq700 := resource.MustParse("700m")
 
 	type args struct {
 		deployment *appsv1.Deployment
@@ -237,10 +237,10 @@ func Test_checkResource(t *testing.T) {
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit100,
+												corev1.ResourceCPU: cpuLimit100,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq100,
+												corev1.ResourceCPU: cpuReq100,
 											},
 										},
 									},
@@ -265,10 +265,10 @@ func Test_checkResource(t *testing.T) {
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit300,
+												corev1.ResourceCPU: cpuLimit300,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq100,
+												corev1.ResourceCPU: cpuReq100,
 											},
 										},
 									},
@@ -293,10 +293,10 @@ func Test_checkResource(t *testing.T) {
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit100,
+												corev1.ResourceCPU: cpuLimit100,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq300,
+												corev1.ResourceCPU: cpuReq300,
 											},
 										},
 									},
@@ -321,10 +321,10 @@ func Test_checkResource(t *testing.T) {
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit300,
+												corev1.ResourceCPU: cpuLimit300,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq300,
+												corev1.ResourceCPU: cpuReq300,
 											},
 										},
 									},
@@ -349,10 +349,10 @@ func Test_checkResource(t *testing.T) {
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit700,
+												corev1.ResourceCPU: cpuLimit700,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq700,
+												corev1.ResourceCPU: cpuReq700,
 											},
 										},
 									},
@@ -377,10 +377,10 @@ func Test_checkResource(t *testing.T) {
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit700,
+												corev1.ResourceCPU: cpuLimit700,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq300,
+												corev1.ResourceCPU: cpuReq300,
 											},
 										},
 									},
@@ -405,10 +405,10 @@ func Test_checkResource(t *testing.T) {
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit300,
+												corev1.ResourceCPU: cpuLimit300,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq700,
+												corev1.ResourceCPU: cpuReq700,
 											},
 										},
 									},
@@ -433,40 +433,40 @@ func Test_checkResource(t *testing.T) {
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit100,
+												corev1.ResourceCPU: cpuLimit100,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq100,
+												corev1.ResourceCPU: cpuReq100,
 											},
 										},
 									},
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit300,
+												corev1.ResourceCPU: cpuLimit300,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq300,
+												corev1.ResourceCPU: cpuReq300,
 											},
 										},
 									},
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit300,
+												corev1.ResourceCPU: cpuLimit300,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq300,
+												corev1.ResourceCPU: cpuReq300,
 											},
 										},
 									},
 									corev1.Container{
 										Resources: corev1.ResourceRequirements{
 											Limits: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuLimit300,
+												corev1.ResourceCPU: cpuLimit300,
 											},
 											Requests: corev1.ResourceList{
-												corev1.ResourceCPU: *cpuReq300,
+												corev1.ResourceCPU: cpuReq300,
 											},
 										},
 									},
