@@ -17,7 +17,7 @@ builds:
     binary: simple-mutating-webhook
 dockers:
   - image_templates:
-      - phh129/{{ .ProjectName }}:{{ .Tag }}
+      - phh129/{{ .ProjectName }}:v0.0.1 #{{ .Tag }}
     dockerfile: GoReleaserDockerfile
 changelog:
   sort: asc

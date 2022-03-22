@@ -32,7 +32,7 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 	log.Infof("binded admission req obj raw : %v", string(admissionReview.Request.Object.Raw))
 
 	var deployment appsv1.Deployment
-	if err := json.Unmarshal(admissionReview.Request.Object.Raw, deployment); err != nil {
+	if err := json.Unmarshal(admissionReview.Request.Object.Raw, &deployment); err != nil {
 		model.ErrResponse(ctx, admissionReview, err)
 		return
 	}
@@ -45,7 +45,7 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 		return
 	}
 
-	patch, err := d.controller.Mutate(deployment)
+	patch, err := d.controller.Mutate(&deployment)
 	if err != nil {
 		model.ErrResponse(ctx, admissionReview, err)
 		return

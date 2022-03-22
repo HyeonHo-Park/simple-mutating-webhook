@@ -19,26 +19,26 @@ const (
 
 type DeploymentController struct {}
 
-func (d DeploymentController) Mutate(deployment appsv1.Deployment) ([]model.JSONPatchEntry, error){
-	replicaBytes, err := checkReplicas(&deployment)
+func (d DeploymentController) Mutate(deployment *appsv1.Deployment) ([]*model.JSONPatchEntry, error){
+	replicaBytes, err := checkReplicas(deployment)
 	if err != nil {
 		log.Errorf("marshall replicas: %v", err)
 		return nil, err
 	}
 
-	containersBytes, err := checkResource(&deployment)
+	containersBytes, err := checkResource(deployment)
 	if err != nil {
 		log.Errorf("marshall containers: %v", err)
 		return nil, err
 	}
 
-	return []model.JSONPatchEntry{
-		model.JSONPatchEntry{
+	return []*model.JSONPatchEntry{
+		&model.JSONPatchEntry{
 			OP:    "replace",
 			Path:  "/spec/replicas",
 			Value: replicaBytes,
 		},
-		model.JSONPatchEntry{
+		&model.JSONPatchEntry{
 			OP:    "replace",
 			Path:  "/spec/template/spec/containers",
 			Value: containersBytes,

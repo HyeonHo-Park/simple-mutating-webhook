@@ -14,7 +14,7 @@ type JSONPatchEntry struct {
 	Value json.RawMessage `json:"value,omitempty"`
 }
 
-func SuccessAdmissionReviewResponse(admissionReview *admissionv1.AdmissionReview, patch []JSONPatchEntry) (*admissionv1.AdmissionReview, error) {
+func SuccessAdmissionReviewResponse(admissionReview *admissionv1.AdmissionReview, patch []*JSONPatchEntry) (*admissionv1.AdmissionReview, error) {
 	patchBytes, err := json.Marshal(&patch)
 	if err != nil {
 		return nil, err

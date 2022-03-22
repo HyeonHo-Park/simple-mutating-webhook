@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: simple-mutating-webhook
-          image: phh129/simple-mutating-webhook:c2f87a1
+          image: phh129/simple-mutating-webhook:v0.0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

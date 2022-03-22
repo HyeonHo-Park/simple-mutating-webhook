@@ -22,18 +22,18 @@ func TestDeploymentController_Mutate(t *testing.T) {
 	cpuReq700 := resource.NewQuantity(700, resource.DecimalSI)
 
 	type args struct {
-		deployment appsv1.Deployment
+		deployment *appsv1.Deployment
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    []model.JSONPatchEntry
+		want    []*model.JSONPatchEntry
 		wantErr bool
 	}{
 		{
 			"mutated replicas and resources",
 			args{
-				deployment: appsv1.Deployment{
+				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
 						Replicas: &moreReplica,
 						Template: corev1.PodTemplateSpec{
@@ -55,13 +55,13 @@ func TestDeploymentController_Mutate(t *testing.T) {
 					},
 				},
 			},
-			[]model.JSONPatchEntry{
-				model.JSONPatchEntry{
+			[]*model.JSONPatchEntry{
+				&model.JSONPatchEntry{
 					OP:    "replace",
 					Path:  "/spec/replicas",
 					Value: []byte("3"),
 				},
-				model.JSONPatchEntry{
+				&model.JSONPatchEntry{
 					OP:    "replace",
 					Path:  "/spec/template/spec/containers",
 					Value: []byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"200\"},\"requests\":{\"cpu\":\"200\"}}}]"),
@@ -72,7 +72,7 @@ func TestDeploymentController_Mutate(t *testing.T) {
 		{
 			"don't need to mutate",
 			args{
-				deployment: appsv1.Deployment{
+				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
 						Replicas: &lessReplica,
 						Template: corev1.PodTemplateSpec{
@@ -94,13 +94,13 @@ func TestDeploymentController_Mutate(t *testing.T) {
 					},
 				},
 			},
-			[]model.JSONPatchEntry{
-				model.JSONPatchEntry{
+			[]*model.JSONPatchEntry{
+				&model.JSONPatchEntry{
 					OP:    "replace",
 					Path:  "/spec/replicas",
 					Value: []byte("1"),
 				},
-				model.JSONPatchEntry{
+				&model.JSONPatchEntry{
 					OP:    "replace",
 					Path:  "/spec/template/spec/containers",
 					Value: []byte("[{\"name\":\"\",\"resources\":{\"limits\":{\"cpu\":\"300\"},\"requests\":{\"cpu\":\"300\"}}}]"),
@@ -111,7 +111,7 @@ func TestDeploymentController_Mutate(t *testing.T) {
 		{
 			"inject resources",
 			args{
-				deployment: appsv1.Deployment{
+				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
 						Replicas: &lessReplica,
 						Template: corev1.PodTemplateSpec{
