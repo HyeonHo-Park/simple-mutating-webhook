@@ -58,45 +58,77 @@ func checkReplicas(deployment *appsv1.Deployment) ([]byte, error) {
 func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 	var rTotal, lTotal int64 = 0, 0
 	for i, c := range deployment.Spec.Template.Spec.Containers{
-		log.Infof("container req cpu :%v", c.Resources.Requests.Cpu())
-		log.Infof("container limit cpu :%v", c.Resources.Limits.Cpu())
-		if req, ok := c.Resources.Requests.Cpu().AsInt64(); ok {
-			r, err := checkEachCPU(req)
-			if err != nil {
-				log.Error(err)
-				return nil, err
-			}
-
-			rTotal, err = checkTotalCPU(rTotal + r)
-			if err != nil {
-				log.Error(err)
-				return nil, err
-			}
-
-			log.Infof("req cpu : %d", r)
-			deployment.Spec.Template.Spec.Containers[i].Resources.Requests = corev1.ResourceList{
-				corev1.ResourceCPU: *resource.NewQuantity(r, resource.DecimalSI),
-			}
+		r, err := checkEachCPU(c.Resources.Requests.Cpu().Value())
+		if err != nil {
+			log.Error(err)
+			return nil, err
 		}
 
-		if limit, ok := c.Resources.Limits.Cpu().AsInt64(); ok {
-			l, err := checkEachCPU(limit)
-			if err != nil {
-				log.Error(err)
-				return nil, err
-			}
-
-			lTotal, err = checkTotalCPU(lTotal + l)
-			if err != nil {
-				log.Error(err)
-				return nil, err
-			}
-
-			log.Infof("lmit cpu : %d", l)
-			deployment.Spec.Template.Spec.Containers[i].Resources.Limits = corev1.ResourceList{
-				corev1.ResourceCPU: *resource.NewQuantity(l, resource.DecimalSI),
-			}
+		rTotal, err = checkTotalCPU(rTotal + r)
+		if err != nil {
+			log.Error(err)
+			return nil, err
 		}
+
+		log.Infof("req cpu : %d", r)
+		deployment.Spec.Template.Spec.Containers[i].Resources.Requests = corev1.ResourceList{
+			corev1.ResourceCPU: *resource.NewQuantity(r, resource.DecimalSI),
+		}
+
+		//if req, ok := c.Resources.Requests.Cpu().AsInt64(); ok {
+		//	r, err := checkEachCPU(req)
+		//	if err != nil {
+		//		log.Error(err)
+		//		return nil, err
+		//	}
+		//
+		//	rTotal, err = checkTotalCPU(rTotal + r)
+		//	if err != nil {
+		//		log.Error(err)
+		//		return nil, err
+		//	}
+		//
+		//	log.Infof("req cpu : %d", r)
+		//	deployment.Spec.Template.Spec.Containers[i].Resources.Requests = corev1.ResourceList{
+		//		corev1.ResourceCPU: *resource.NewQuantity(r, resource.DecimalSI),
+		//	}
+		//}
+
+		l, err := checkEachCPU(c.Resources.Limits.Cpu().Value())
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+
+		lTotal, err = checkTotalCPU(lTotal + l)
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+
+		log.Infof("lmit cpu : %d", l)
+		deployment.Spec.Template.Spec.Containers[i].Resources.Limits = corev1.ResourceList{
+			corev1.ResourceCPU: *resource.NewQuantity(l, resource.DecimalSI),
+		}
+
+		//if limit, ok := c.Resources.Limits.Cpu().AsInt64(); ok {
+		//	l, err := checkEachCPU(limit)
+		//	if err != nil {
+		//		log.Error(err)
+		//		return nil, err
+		//	}
+		//
+		//	lTotal, err = checkTotalCPU(lTotal + l)
+		//	if err != nil {
+		//		log.Error(err)
+		//		return nil, err
+		//	}
+		//
+		//	log.Infof("lmit cpu : %d", l)
+		//	deployment.Spec.Template.Spec.Containers[i].Resources.Limits = corev1.ResourceList{
+		//		corev1.ResourceCPU: *resource.NewQuantity(l, resource.DecimalSI),
+		//	}
+		//}
 	}
 
 	return json.Marshal(&deployment.Spec.Template.Spec.Containers)
