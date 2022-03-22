@@ -2,7 +2,6 @@ package model
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	admissionv1 "k8s.io/api/admission/v1"
@@ -16,33 +15,45 @@ type JSONPatchEntry struct {
 	Value json.RawMessage `json:"value,omitempty"`
 }
 
+func getSuccessResponse(uid types.UID, patch []*JSONPatchEntry) *admissionv1.AdmissionResponse {
+	patchBytes, err := json.Marshal(&patch)
+	if err != nil {
+		log.Errorf("Failed Marshal: %v", err)
+		return nil
+	}
+
+	patchType := admissionv1.PatchTypeJSONPatch
+
+	return &admissionv1.AdmissionResponse{
+		UID:       uid,
+		Allowed:   true,
+		Patch:     patchBytes,
+		PatchType: &patchType,
+	}
+}
+
+func getFailedResponse(uid types.UID, err error) *admissionv1.AdmissionResponse {
+	return &admissionv1.AdmissionResponse{
+		UID:     uid,
+		Allowed: false,
+		Result:  &metav1.Status{Message: err.Error()},
+	}
+}
+
+func getEmptyResponse(uid types.UID) *admissionv1.AdmissionResponse {
+	return &admissionv1.AdmissionResponse{ UID: uid }
+}
+
 func makeResponseObj(uid types.UID, data interface{}) *admissionv1.AdmissionReview {
 	var response *admissionv1.AdmissionResponse
 
 	switch data.(type) {
 	case []*JSONPatchEntry:
-		patchBytes, err := json.Marshal(&data)
-		if err != nil {
-		}
-
-		patchType := admissionv1.PatchTypeJSONPatch
-
-		response = &admissionv1.AdmissionResponse{
-			UID:       uid,
-			Allowed:   true,
-			Patch:     patchBytes,
-			PatchType: &patchType,
-		}
+		response = getSuccessResponse(uid, data.([]*JSONPatchEntry))
 	case error:
-		response = &admissionv1.AdmissionResponse{
-			UID:     uid,
-			Allowed: false,
-			Result:  &metav1.Status{Message: fmt.Sprintf("%v", data)},
-		}
+		response = getFailedResponse(uid, data.(error))
 	default:
-		response = &admissionv1.AdmissionResponse{
-			UID: uid,
-		}
+		response = getEmptyResponse(uid)
 	}
 
 	return &admissionv1.AdmissionReview{
@@ -54,7 +65,7 @@ func makeResponseObj(uid types.UID, data interface{}) *admissionv1.AdmissionRevi
 	}
 }
 
-func APIResponse(ctx *gin.Context, ar *admissionv1.AdmissionReview, data interface{}) {
+func WriteResponse(ctx *gin.Context, ar *admissionv1.AdmissionReview, data interface{}) {
 	obj := makeResponseObj(ar.Request.UID, data)
 	resp, err := json.Marshal(obj)
 	if err != nil {

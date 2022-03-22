@@ -27,18 +27,18 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 
 	var deployment appsv1.Deployment
 	if err := json.Unmarshal(admissionReview.Request.Object.Raw, &deployment); err != nil {
-		model.APIResponse(ctx, admissionReview, err)
+		model.WriteResponse(ctx, admissionReview, err)
 		return
 	}
 
 	if deployment.Namespace != NamespaceNeedToBeMutated {
-		model.APIResponse(ctx, admissionReview, nil)
+		model.WriteResponse(ctx, admissionReview, nil)
 		return
 	}
 
 	patch, err := d.controller.Mutate(&deployment)
 	if err != nil {
-		model.APIResponse(ctx, admissionReview, patch)
+		model.WriteResponse(ctx, admissionReview, patch)
 		return
 	}
 }
