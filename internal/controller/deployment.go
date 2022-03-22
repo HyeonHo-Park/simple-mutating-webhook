@@ -19,7 +19,6 @@ const (
 
 type DeploymentController struct{}
 
-//Mutate TODO: Check DecimalSI format 200 -> 200m
 func (d DeploymentController) Mutate(deployment *appsv1.Deployment) ([]*model.JSONPatchEntry, error) {
 	replicaBytes, err := checkReplicas(deployment)
 	if err != nil {
@@ -58,6 +57,8 @@ func checkReplicas(deployment *appsv1.Deployment) ([]byte, error) {
 
 func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 	var rTotal, lTotal int64 = 0, 0
+	replicas := int64(*deployment.Spec.Replicas)
+
 	for i, c := range deployment.Spec.Template.Spec.Containers {
 		r, err := checkEachCPU(c.Resources.Requests.Cpu().Value())
 		if err != nil {
@@ -65,7 +66,7 @@ func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 			return nil, err
 		}
 
-		rTotal, err = checkTotalCPU(rTotal + r)
+		rTotal, err = checkTotalCPU(rTotal + (r * replicas))
 		if err != nil {
 			log.Error(err)
 			return nil, err
@@ -80,7 +81,7 @@ func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 			return nil, err
 		}
 
-		lTotal, err = checkTotalCPU(lTotal + l)
+		lTotal, err = checkTotalCPU(lTotal + (l * replicas))
 		if err != nil {
 			log.Error(err)
 			return nil, err

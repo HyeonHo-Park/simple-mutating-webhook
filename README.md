@@ -8,9 +8,9 @@ make install
 
 ### deploy sample deployment to k8s
 ```shell
-make deploy ex1
-make deploy ex2
-make deploy ex3
+make deploy CASE=ex1
+make deploy CASE=ex2
+make deploy CASE=ex3
 ```
 
 ### check webhook logs

@@ -146,7 +146,8 @@ func TestDeploymentController_Mutate(t *testing.T) {
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Mutate() got = %v, want %v", got, tt.want)
+				t.Errorf("Mutate() got = %v, want %v", string(got[0].Value), string(tt.want[0].Value))
+				t.Errorf("Mutate() got = %v, want %v", string(got[1].Value), string(tt.want[1].Value))
 			}
 		})
 	}
@@ -205,6 +206,8 @@ func Test_checkReplicas(t *testing.T) {
 }
 
 func Test_checkResource(t *testing.T) {
+	replica := int32(1)
+
 	cpuLimit100 := resource.NewQuantity(100, resource.DecimalSI)
 	cpuLimit300 := resource.NewQuantity(300, resource.DecimalSI)
 	cpuLimit700 := resource.NewQuantity(700, resource.DecimalSI)
@@ -227,6 +230,7 @@ func Test_checkResource(t *testing.T) {
 			args{
 				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
+						Replicas: &replica,
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -254,6 +258,7 @@ func Test_checkResource(t *testing.T) {
 			args{
 				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
+						Replicas: &replica,
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -281,6 +286,7 @@ func Test_checkResource(t *testing.T) {
 			args{
 				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
+						Replicas: &replica,
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -308,6 +314,7 @@ func Test_checkResource(t *testing.T) {
 			args{
 				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
+						Replicas: &replica,
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -335,6 +342,7 @@ func Test_checkResource(t *testing.T) {
 			args{
 				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
+						Replicas: &replica,
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -362,6 +370,7 @@ func Test_checkResource(t *testing.T) {
 			args{
 				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
+						Replicas: &replica,
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -389,6 +398,7 @@ func Test_checkResource(t *testing.T) {
 			args{
 				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
+						Replicas: &replica,
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -416,6 +426,7 @@ func Test_checkResource(t *testing.T) {
 			args{
 				deployment: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
+						Replicas: &replica,
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
