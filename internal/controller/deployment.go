@@ -58,6 +58,8 @@ func checkReplicas(deployment *appsv1.Deployment) ([]byte, error) {
 func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 	var rTotal, lTotal int64 = 0, 0
 	for i, c := range deployment.Spec.Template.Spec.Containers{
+		log.Infof("container req cpu :%v", c.Resources.Requests.Cpu())
+		log.Infof("container limit cpu :%v", c.Resources.Limits.Cpu())
 		if req, ok := c.Resources.Requests.Cpu().AsInt64(); ok {
 			r, err := checkEachCPU(req)
 			if err != nil {
