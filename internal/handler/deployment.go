@@ -28,16 +28,11 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 	admissionReview := &admissionv1.AdmissionReview{}
 	ctx.Bind(admissionReview)
 
-	// deleted log
-	log.Infof("binded admission req obj raw : %v", string(admissionReview.Request.Object.Raw))
-
 	var deployment appsv1.Deployment
 	if err := json.Unmarshal(admissionReview.Request.Object.Raw, &deployment); err != nil {
 		model.ErrResponse(ctx, admissionReview, err)
 		return
 	}
-	// deleted log
-	log.Infof("deployment : %v", deployment)
 
 	if deployment.Namespace != NamespaceNeedToBeMutated {
 		result := model.EmptyAdmissionReviewResponse(admissionReview)
@@ -51,7 +46,8 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 		return
 	}
 	// deleted log
-	log.Infof("patch : %v", patch)
+	log.Infof("patch[0] : %v", patch[0])
+	log.Infof("patch[1] : %v", patch[1])
 
 	result, err := model.SuccessAdmissionReviewResponse(admissionReview, patch)
 	if err != nil {
@@ -60,6 +56,6 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 	}
 
 	// deleted log
-	log.Infof("result : %v", result)
+	log.Infof("result : %v", string(result.Response.Patch))
 	model.APIResponse(ctx, "OK", http.StatusOK, ctx.Request.Method, result)
 }
