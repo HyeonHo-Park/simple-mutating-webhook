@@ -71,21 +71,25 @@ type ResponseBody struct {
 }
 
 //APIResponse TODO: Fix admission response
-func APIResponse(ctx *gin.Context, Message string, StatusCode int, Method string, Data interface{}) {
-	jsonResponse := ResponseBody{
-		StatusCode: StatusCode,
-		Method:     Method,
-		Message:    Message,
-		Data:       Data,
+func APIResponse(ctx *gin.Context, Message string, StatusCode int, Method string, admissionReview *admissionv1.AdmissionReview) {
+	resp, err := json.Marshal(admissionReview)
+	if err != nil {
+		log.Errorf("Failed Marshal: %v", err)
 	}
-
-	log.Infof("Data: %v", Data)
-	if StatusCode >= 400 {
-		ctx.JSON(StatusCode, jsonResponse)
-		defer ctx.AbortWithStatus(StatusCode)
-	} else {
-		ctx.JSON(StatusCode, jsonResponse)
-	}
+	ctx.Writer.Write(resp)
+	//jsonResponse := ResponseBody{
+	//	StatusCode: StatusCode,
+	//	Method:     Method,
+	//	Message:    Message,
+	//	Data:       Data,
+	//}
+	//
+	//if StatusCode >= 400 {
+	//	ctx.JSON(StatusCode, jsonResponse)
+	//	defer ctx.AbortWithStatus(StatusCode)
+	//} else {
+	//	ctx.JSON(StatusCode, jsonResponse)
+	//}
 }
 
 func ErrResponse(ctx *gin.Context, admissionReview *admissionv1.AdmissionReview, err error) {
