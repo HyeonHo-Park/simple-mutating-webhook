@@ -46,8 +46,8 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 		return
 	}
 	// deleted log
-	log.Infof("patch[0] : %v", patch[0])
-	log.Infof("patch[1] : %v", patch[1])
+	log.Infof("patch replicas value : %v", string(patch[0].Value))
+	log.Infof("patch resources value : %v", string(patch[1].Value))
 
 	result, err := model.SuccessAdmissionReviewResponse(admissionReview, patch)
 	if err != nil {
