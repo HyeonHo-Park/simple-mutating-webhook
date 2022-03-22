@@ -28,9 +28,9 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 	admissionReview := &admissionv1.AdmissionReview{}
 
 	// deleted log
-	log.Infof("req body : %v", ctx.Request)
+	log.Infof("req body : %v", ctx.Request.Body)
 
-	ctx.Bind(admissionReview.Request)
+	ctx.Bind(admissionReview)
 
 	// deleted log
 	log.Infof("binded admission req : %v", admissionReview.Request)
