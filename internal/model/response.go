@@ -88,5 +88,5 @@ func APIResponse(ctx *gin.Context, Message string, StatusCode int, Method string
 
 func ErrResponse(ctx *gin.Context, admissionReview *admissionv1.AdmissionReview, err error) {
 	inject := FailedAdmissionReviewResponse(admissionReview, err)
-	APIResponse(ctx, err.Error(), http.StatusInternalServerError, ctx.Request.Method, inject)
+	APIResponse(ctx, err.Error(), http.StatusInternalServerError, ctx.Request.Method, &inject)
 }

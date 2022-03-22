@@ -36,7 +36,7 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 
 	if deployment.Namespace != NamespaceNeedToBeMutated {
 		result := model.EmptyAdmissionReviewResponse(admissionReview)
-		model.APIResponse(ctx, "OK", http.StatusOK, ctx.Request.Method, result)
+		model.APIResponse(ctx, "OK", http.StatusOK, ctx.Request.Method, &result)
 		return
 	}
 
@@ -53,5 +53,5 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 	}
 
 	log.Infof("patch result : %v", string(result.Response.Patch))
-	model.APIResponse(ctx, "OK", http.StatusOK, ctx.Request.Method, result)
+	model.APIResponse(ctx, "OK", http.StatusOK, ctx.Request.Method, &result)
 }
