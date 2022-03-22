@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	admissionv1 "k8s.io/api/admission/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net/http"
@@ -78,6 +79,7 @@ func APIResponse(ctx *gin.Context, Message string, StatusCode int, Method string
 		Data:       Data,
 	}
 
+	log.Infof("Data: %v", Data)
 	if StatusCode >= 400 {
 		ctx.JSON(StatusCode, jsonResponse)
 		defer ctx.AbortWithStatus(StatusCode)
