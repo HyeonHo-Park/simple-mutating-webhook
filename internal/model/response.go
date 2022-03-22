@@ -69,6 +69,7 @@ type ResponseBody struct {
 	Data       interface{} `json:"data"`
 }
 
+//APIResponse TODO: Fix admission response
 func APIResponse(ctx *gin.Context, Message string, StatusCode int, Method string, Data interface{}) {
 	jsonResponse := ResponseBody{
 		StatusCode: StatusCode,

@@ -19,6 +19,7 @@ const (
 
 type DeploymentController struct {}
 
+//Mutate TODO: Check DecimalSI format 200 -> 200m
 func (d DeploymentController) Mutate(deployment *appsv1.Deployment) ([]*model.JSONPatchEntry, error){
 	replicaBytes, err := checkReplicas(deployment)
 	if err != nil {
@@ -70,29 +71,9 @@ func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 			return nil, err
 		}
 
-		log.Infof("req cpu : %d", r)
 		deployment.Spec.Template.Spec.Containers[i].Resources.Requests = corev1.ResourceList{
 			corev1.ResourceCPU: *resource.NewQuantity(r, resource.DecimalSI),
 		}
-
-		//if req, ok := c.Resources.Requests.Cpu().AsInt64(); ok {
-		//	r, err := checkEachCPU(req)
-		//	if err != nil {
-		//		log.Error(err)
-		//		return nil, err
-		//	}
-		//
-		//	rTotal, err = checkTotalCPU(rTotal + r)
-		//	if err != nil {
-		//		log.Error(err)
-		//		return nil, err
-		//	}
-		//
-		//	log.Infof("req cpu : %d", r)
-		//	deployment.Spec.Template.Spec.Containers[i].Resources.Requests = corev1.ResourceList{
-		//		corev1.ResourceCPU: *resource.NewQuantity(r, resource.DecimalSI),
-		//	}
-		//}
 
 		l, err := checkEachCPU(c.Resources.Limits.Cpu().Value())
 		if err != nil {
@@ -106,29 +87,9 @@ func checkResource(deployment *appsv1.Deployment) ([]byte, error) {
 			return nil, err
 		}
 
-		log.Infof("lmit cpu : %d", l)
 		deployment.Spec.Template.Spec.Containers[i].Resources.Limits = corev1.ResourceList{
 			corev1.ResourceCPU: *resource.NewQuantity(l, resource.DecimalSI),
 		}
-
-		//if limit, ok := c.Resources.Limits.Cpu().AsInt64(); ok {
-		//	l, err := checkEachCPU(limit)
-		//	if err != nil {
-		//		log.Error(err)
-		//		return nil, err
-		//	}
-		//
-		//	lTotal, err = checkTotalCPU(lTotal + l)
-		//	if err != nil {
-		//		log.Error(err)
-		//		return nil, err
-		//	}
-		//
-		//	log.Infof("lmit cpu : %d", l)
-		//	deployment.Spec.Template.Spec.Containers[i].Resources.Limits = corev1.ResourceList{
-		//		corev1.ResourceCPU: *resource.NewQuantity(l, resource.DecimalSI),
-		//	}
-		//}
 	}
 
 	return json.Marshal(&deployment.Spec.Template.Spec.Containers)

@@ -45,9 +45,6 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 		model.ErrResponse(ctx, admissionReview, err)
 		return
 	}
-	// deleted log
-	log.Infof("patch replicas value : %v", string(patch[0].Value))
-	log.Infof("patch resources value : %v", string(patch[1].Value))
 
 	result, err := model.SuccessAdmissionReviewResponse(admissionReview, patch)
 	if err != nil {
@@ -55,7 +52,6 @@ func (d DeploymentHandler) Mutate(ctx *gin.Context) {
 		return
 	}
 
-	// deleted log
-	log.Infof("result : %v", string(result.Response.Patch))
+	log.Infof("patch result : %v", string(result.Response.Patch))
 	model.APIResponse(ctx, "OK", http.StatusOK, ctx.Request.Method, result)
 }
