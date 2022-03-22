@@ -12,8 +12,6 @@ RUN go mod verify
 COPY .git .git
 COPY cmd cmd
 COPY internal internal
-COPY hack hack
-COPY Makefile ./
 
 ENV GO111MODULE="on" \
   GOOS="linux" \
